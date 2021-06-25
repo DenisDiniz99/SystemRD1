@@ -9,22 +9,39 @@
     }
   },
   "profiles": {
-    "IIS Express": {
+    "IIS Express - Development": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "weatherforecast",
+      "launchUrl": "customer",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "SystemRD1.Api": {
+    "IIS Express - Staging": {
+      "commandName": "IISExpress",
+      "launchBrowser": true,
+      "launchUrl": "customer",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Staging"
+      }
+    },
+    "IIS Express - Production": {
+      "commandName": "IISExpress",
+      "launchBrowser": true,
+      "launchUrl": "customer",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIROMENT": "Production"
+      }
+    },
+    "Self Hosted": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "weatherforecast",
-      "applicationUrl": "https://localhost:5001;http://localhost:5000",
+      "launchUrl": "customer",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+        "ASPNETCORE_ENVIROMENT": "Development"
+      },
+      "dotNetRunMessage": true,
+      "applicationUrl": "https://localhost:5001;http://localhost:5000"
     }
   }
 }

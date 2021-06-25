@@ -9,7 +9,7 @@ namespace SystemRD1.Domain.Entities
         /*Ctor. Default : EF Core*/
         public Customer() { }
 
-        public string FisrtName { get; set; }
+        public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Gender { get; set; }
         public EDocumentType DocumentType { get; set; }

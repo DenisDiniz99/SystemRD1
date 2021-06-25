@@ -3,64 +3,64 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.Collections.Generic;
 using System.Linq;
+using SystemRD1.Business.Contracts.Notifiers;
+using SystemRD1.Business.Notifications;
 
 namespace SystemRD1.Api.Controllers
 {
     [ApiController]
     public abstract class ApiController : ControllerBase
     {
-        protected readonly ICollection<string> _errors = new List<string>();
-        
+        protected readonly INotifier _notifier;
+
+        public ApiController(INotifier notifier)
+        {
+            _notifier = notifier;
+        }
+
+        private bool ValidOperation()
+        {
+            return !_notifier.HaveNotification();
+        }
+
         protected ActionResult CustomResponse(object result = null)
         {
-            if (IsOperationValid())
+            if (ValidOperation())
             {
-                return Ok(result);
+                return Ok(new
+                {
+                    success = true,
+                    data = result
+                });
             }
 
-            return BadRequest(new ValidationProblemDetails(new Dictionary<string, string[]>
+            return BadRequest(new
             {
-                {
-                    "message", _errors.ToArray()
-                }
-            }));
+                success = false,
+                data = _notifier.GetNotifications().SelectMany(e => e.Message)
+            });
         }
 
         protected ActionResult CustomResponse(ModelStateDictionary modelState)
+        {
+            if (!modelState.IsValid) NotifyInvalidModelError(modelState);
+            return CustomResponse();
+        }
+
+        private void NotifyInvalidModelError(ModelStateDictionary modelState)
         {
             var errors = modelState.Values.SelectMany(e => e.Errors);
 
             foreach(var e in errors)
             {
-                AddErrors(e.ErrorMessage);
+                var errorMessage = e.Exception == null ? e.ErrorMessage : e.Exception.Message;
+                NotifyError(errorMessage);
             }
-
-            return CustomResponse();
         }
 
-        protected ActionResult CustomResponse(ValidationResult validationResult)
+        protected void NotifyError(string message)
         {
-            foreach(var e in validationResult.Errors)
-            {
-                AddErrors(e.ErrorMessage);
-            }
-
-            return CustomResponse();
-        }
-
-        protected bool IsOperationValid()
-        {
-            return !_errors.Any();
-        }
-
-        protected void AddErrors(string error)
-        {
-            _errors.Add(error);
-        }
-
-        protected void ClearErrors()
-        {
-            _errors.Clear();
+            _notifier.Handle(new Notification(message));
         }
     }
 }

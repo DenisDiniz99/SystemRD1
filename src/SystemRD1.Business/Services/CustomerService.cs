@@ -21,11 +21,7 @@ namespace SystemRD1.Business.Services
 
         public async Task AddAsync(Customer customer)
         {
-            if (!PerformValidation(new CustomerValidation(), customer)) return;
-
-            bool document = await _customerRepository.GetDocumentExists(customer.Document);
-
-            if (document == false) return;
+            if (!PerformValidation(new CustomerValidation(), customer)) return;        
 
             await _customerRepository.AddAsync(customer);
         }

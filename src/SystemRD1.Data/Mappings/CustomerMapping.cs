@@ -10,7 +10,7 @@ namespace SystemRD1.Data.Mappings
         {
             builder.HasKey(c => c.Id);
 
-            builder.Property(c => c.FisrtName)
+            builder.Property(c => c.FirstName)
                 .IsRequired()
                 .HasMaxLength(50);
 

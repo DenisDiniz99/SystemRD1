@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using SystemRD1.Api.ViewModels;
+using SystemRD1.Business.Contracts.Notifiers;
 using SystemRD1.Business.Contracts.Services;
 using SystemRD1.Domain.Contracts;
 using SystemRD1.Domain.Entities;
@@ -17,7 +18,8 @@ namespace SystemRD1.Api.Controllers.V1
         private readonly ICustomerService _customerService;
         private readonly IMapper _mapper;
 
-        public CustomersController(ICustomerRepository customerRepository, ICustomerService customerService, IMapper mapper)
+        public CustomersController(ICustomerRepository customerRepository, ICustomerService customerService, 
+                                    IMapper mapper, INotifier notifier) : base(notifier)
         {
             _customerRepository = customerRepository;
             _customerService = customerService;
@@ -30,7 +32,7 @@ namespace SystemRD1.Api.Controllers.V1
             return _mapper.Map<IEnumerable<CustomerViewModel>>(await _customerRepository.GetAllAsync());
         }
 
-        [HttpGet("id:{guid}")]
+        [HttpGet("{id:guid}")]
         public async Task<ActionResult<CustomerViewModel>> GetById(Guid id)
         {
             if (id == null) return CustomResponse(id);
@@ -39,17 +41,24 @@ namespace SystemRD1.Api.Controllers.V1
         }
 
         [HttpPost]
-        public async Task<ActionResult> Add(CustomerViewModel customerViewModel)
+        public async Task<ActionResult<CustomerViewModel>> Add(CustomerViewModel customerViewModel)
         {
             if (!ModelState.IsValid) return CustomResponse(ModelState);
 
+            bool document = await _customerRepository.GetDocumentExists(customerViewModel.Document);
+
+            if (document)
+            {
+                NotifyError("Já existe um cliente cadastrado com este documento");
+                return CustomResponse(customerViewModel);
+            }
             await _customerService.AddAsync(_mapper.Map<Customer>(customerViewModel));
 
             return CustomResponse(customerViewModel);
         }
 
         [HttpPut]
-        public async Task<ActionResult> Update(CustomerViewModel customerViewModel)
+        public async Task<ActionResult<CustomerViewModel>> Update(CustomerViewModel customerViewModel)
         {
             if (!ModelState.IsValid) return CustomResponse(ModelState);
 
@@ -58,8 +67,8 @@ namespace SystemRD1.Api.Controllers.V1
             return CustomResponse(customerViewModel);
         }
 
-        [HttpDelete]
-        public async Task<ActionResult> Delete(Guid id)
+        [HttpDelete("{id:guid}")]
+        public async Task<ActionResult<CustomerViewModel>> Delete(Guid id)
         {
             if (id == null) return CustomResponse(ModelState);
 

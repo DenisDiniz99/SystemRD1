@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System;
 using SystemRD1.Domain.Entities;
 
 namespace SystemRD1.Data.Mappings
@@ -17,7 +18,7 @@ namespace SystemRD1.Data.Mappings
             builder.Property(c => c.LastName)
                 .IsRequired()
                 .HasMaxLength(50);
-
+            
             builder.OwnsOne(c => c.Address, address =>
             {
                 address.Property(a => a.Street)

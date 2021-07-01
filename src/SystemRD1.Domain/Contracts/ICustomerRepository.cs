@@ -9,5 +9,6 @@ namespace SystemRD1.Domain.Contracts
     public interface ICustomerRepository : IRepository<Customer>
     {
         Task<bool> GetDocumentExists(string document);
+        Task<bool> CustomerExists(Guid id);
     }
 }

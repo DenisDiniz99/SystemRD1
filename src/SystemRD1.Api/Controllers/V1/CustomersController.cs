@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using SystemRD1.Api.ViewModels;
 using SystemRD1.Business.Contracts.Notifiers;
@@ -26,55 +27,82 @@ namespace SystemRD1.Api.Controllers.V1
             _mapper = mapper;
         }
 
+
         [HttpGet]
-        public async Task<IEnumerable<CustomerViewModel>> GetAll()
+        public async Task<ActionResult<IEnumerable<CustomerViewModel>>> Get()
         {
-            return _mapper.Map<IEnumerable<CustomerViewModel>>(await _customerRepository.GetAllAsync());
+            return ResponseGet(_mapper.Map<IEnumerable<CustomerViewModel>>(await _customerRepository.GetAllAsync()));
         }
 
-        [HttpGet("{id:guid}")]
-        public async Task<ActionResult<CustomerViewModel>> GetById(Guid id)
-        {
-            if (id == null) return CustomResponse(id);
 
-            return _mapper.Map<CustomerViewModel>(await _customerRepository.GetByIdAsync(id));
+
+        [HttpGet("{id:guid}")]
+        public async Task<ActionResult<CustomerViewModel>> Get(Guid id)
+        {
+            return ResponseGet(_mapper.Map<CustomerViewModel>(await _customerRepository.GetByIdAsync(id)));
         }
 
         [HttpPost]
-        public async Task<ActionResult<CustomerViewModel>> Add(CustomerViewModel customerViewModel)
+        public async Task<ActionResult<CustomerViewModel>> Post(CustomerViewModel customerViewModel)
         {
-            if (!ModelState.IsValid) return CustomResponse(ModelState);
+            if (!ModelState.IsValid)
+            {
+                NotifyInvalidModelError(ModelState);
+                return ModelStateErrorResponseError();
+            }
 
             bool document = await _customerRepository.GetDocumentExists(customerViewModel.Document);
 
             if (document)
             {
                 NotifyError("Já existe um cliente cadastrado com este documento");
-                return CustomResponse(customerViewModel);
+                return ResponsePost(customerViewModel);
             }
+
             await _customerService.AddAsync(_mapper.Map<Customer>(customerViewModel));
 
-            return CustomResponse(customerViewModel);
+            return ResponsePost(customerViewModel);
         }
 
         [HttpPut]
-        public async Task<ActionResult<CustomerViewModel>> Update(CustomerViewModel customerViewModel)
+        public async Task<ActionResult<CustomerViewModel>> Put(CustomerViewModel customerViewModel)
         {
-            if (!ModelState.IsValid) return CustomResponse(ModelState);
+            if (!ModelState.IsValid)
+            {
+                NotifyInvalidModelError(ModelState);
+                return ModelStateErrorResponseError();
+            }
+
+            if (!await CustomerExists(customerViewModel.Id))
+            {
+                NotifyError("Cliente não encontrado");
+                return ResponsePut();
+            }
 
             await _customerService.UpdateAsync(_mapper.Map<Customer>(customerViewModel));
 
-            return CustomResponse(customerViewModel);
+            return ResponsePut();
         }
 
         [HttpDelete("{id:guid}")]
         public async Task<ActionResult<CustomerViewModel>> Delete(Guid id)
         {
-            if (id == null) return CustomResponse(ModelState);
+            if (!await CustomerExists(id))
+            {
+                NotifyError("Cliente não encontrado");
+                return ResponseDelete(id);
+            }
 
             await _customerService.DeleteAsync(id);
 
-            return CustomResponse();
+            return ResponseDelete(id);
+        }
+
+
+
+        private async Task<bool> CustomerExists(Guid id)
+        {
+            return await _customerRepository.CustomerExists(id);
         }
     }
 }

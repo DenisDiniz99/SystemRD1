@@ -8,8 +8,6 @@ namespace SystemRD1.Api.ViewModels
         [Key]
         public Guid Id { get; set; }
 
-        [DataType(DataType.Date, ErrorMessage = "O campo {0} não está em um formato válido")]
-        public DateTime CreationDate { get; set; }
 
         [Required(ErrorMessage = "O campo {0} é obrigatório")]
         [StringLength(50, ErrorMessage = "O campo {0} deve conter entre {2} e {1} caracteres", MinimumLength = 2)]

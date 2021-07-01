@@ -7,7 +7,11 @@ namespace SystemRD1.Data.Contexts
     {
         public SystemContext() { }
 
-        public SystemContext(DbContextOptions<SystemContext> options) : base(options) { }
+        public SystemContext(DbContextOptions<SystemContext> options) : base(options) 
+        {
+            ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+            ChangeTracker.AutoDetectChangesEnabled = false;
+        }
 
         public DbSet<Customer> Customers { get; set; }
 

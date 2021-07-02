@@ -8,7 +8,9 @@ namespace SystemRD1.Domain.Contracts
 {
     public interface ICustomerRepository : IRepository<Customer>
     {
-        Task<bool> GetDocumentExists(string document);
+        Task<bool> DocumentExists(string document);
         Task<bool> CustomerExists(Guid id);
+        Task<IEnumerable<Customer>> GetByName(string name);
+        Task<Customer> GetByDocument(string document);
     }
 }

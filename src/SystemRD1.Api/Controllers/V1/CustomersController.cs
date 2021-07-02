@@ -34,12 +34,22 @@ namespace SystemRD1.Api.Controllers.V1
             return ResponseGet(_mapper.Map<IEnumerable<CustomerViewModel>>(await _customerRepository.GetAllAsync()));
         }
 
-
-
         [HttpGet("{id:guid}")]
         public async Task<ActionResult<CustomerViewModel>> Get(Guid id)
         {
             return ResponseGet(_mapper.Map<CustomerViewModel>(await _customerRepository.GetByIdAsync(id)));
+        }
+
+        [HttpGet("{name}")]
+        public async Task<ActionResult<IEnumerable<CustomerViewModel>>> GetByName(string name)
+        {
+            return ResponseGet(_mapper.Map<IEnumerable<CustomerViewModel>>(await _customerRepository.GetByName(name)));
+        }
+
+        [HttpGet("{document}")]
+        public async Task<ActionResult<CustomerViewModel>> GetByDocument(string document)
+        {
+            return ResponseGet(_mapper.Map<CustomerViewModel>(await _customerRepository.GetByDocument(document)));
         }
 
         [HttpPost]
@@ -51,7 +61,7 @@ namespace SystemRD1.Api.Controllers.V1
                 return ModelStateErrorResponseError();
             }
 
-            bool document = await _customerRepository.GetDocumentExists(customerViewModel.Document);
+            bool document = await _customerRepository.DocumentExists(customerViewModel.Document);
 
             if (document)
             {

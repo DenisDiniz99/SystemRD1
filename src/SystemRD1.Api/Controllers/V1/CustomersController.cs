@@ -40,13 +40,13 @@ namespace SystemRD1.Api.Controllers.V1
             return ResponseGet(_mapper.Map<CustomerViewModel>(await _customerRepository.GetByIdAsync(id)));
         }
 
-        [HttpGet("{name}")]
+        [HttpGet("name/{name}")]
         public async Task<ActionResult<IEnumerable<CustomerViewModel>>> GetByName(string name)
         {
             return ResponseGet(_mapper.Map<IEnumerable<CustomerViewModel>>(await _customerRepository.GetByName(name)));
         }
 
-        [HttpGet("{document}")]
+        [HttpGet("document/{document}")]
         public async Task<ActionResult<CustomerViewModel>> GetByDocument(string document)
         {
             return ResponseGet(_mapper.Map<CustomerViewModel>(await _customerRepository.GetByDocument(document)));

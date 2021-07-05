@@ -6,7 +6,7 @@ namespace SystemRD1.Domain.Entities
     {
         public Entity()
         {
-            CreationDate = DateTime.UtcNow;
+            CreationDate = DateTime.Now;
         }
 
         public Guid Id { get; set; }

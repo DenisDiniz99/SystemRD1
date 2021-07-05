@@ -10,31 +10,31 @@ namespace SystemRD1.Domain.Validations
         public CustomerValidation()
         {
             RuleFor(c => c.FirstName)
-                .NotEmpty().WithMessage("O campo {PropertyName} não pode ser vazio")
-                .MaximumLength(50).WithMessage("O campo {PropertyName} deve conter até 50 caracteres");
+                .NotEmpty().WithMessage("O campo Nome não pode ser vazio")
+                .MaximumLength(50).WithMessage("O campo Nome deve conter até 50 caracteres");
 
             RuleFor(c => c.LastName)
-                .NotEmpty().WithMessage("O campo {PropertyName} não pode ser vazio")
-                .MaximumLength(50).WithMessage("O campo {PropertyName} deve conter até 50 caracteres");
+                .NotEmpty().WithMessage("O campo Sobrenome não pode ser vazio")
+                .MaximumLength(50).WithMessage("O campo Sobrenome deve conter até 50 caracteres");
 
             RuleFor(c => c.Gender)
-                .NotEmpty().WithMessage("O campo {PropertyName} não pode ser vazio")
-                .Length(1).WithMessage("O campo {PropertyName} deve conter somente 1 caracter (M ou F)");
+                .NotEmpty().WithMessage("O campo Gênero não pode ser vazio")
+                .Length(1).WithMessage("O campo Gênero deve conter somente 1 caracter (M ou F)");
 
             When(c => c.DocumentType == EDocumentType.Cpf, () =>
             {
                 RuleFor(c => c.Document.Length)
-                  .Equal(CpfValidation.CpfSize).WithMessage("O campo {PropertyName} (CPF) deve conter 11 caracteres");
+                  .Equal(CpfValidation.CpfSize).WithMessage("O campo Documento (CPF) deve conter 11 caracteres");
                 RuleFor(c => CpfValidation.Validate(c.Document))
-                   .Equal(true).WithMessage("O campo {PropertyName} não é válido");
+                   .Equal(true).WithMessage("O campo Documento (CPF) não é válido");
             });
 
             When(c => c.DocumentType == EDocumentType.Cnpj, () =>
             {
                 RuleFor(c => c.Document.Length)
-                    .Equal(CnpjValidation.CnpjSize).WithMessage("O campo {PropertyName} (CNPJ) deve conter 14 caracteres");
+                    .Equal(CnpjValidation.CnpjSize).WithMessage("O campo Documento (CNPJ) deve conter 14 caracteres");
                 RuleFor(c => CnpjValidation.Validate(c.Document))
-                    .Equal(true).WithMessage("O campo {PropertyName} não é válido");
+                    .Equal(true).WithMessage("O campo Documento (CNPJ) não é válido");
             });
 
         }

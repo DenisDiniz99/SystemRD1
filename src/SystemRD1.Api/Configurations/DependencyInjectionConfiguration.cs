@@ -1,4 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using Swashbuckle.AspNetCore.SwaggerGen;
+using SystemRD1.Api.Configurations.Swagger;
+using SystemRD1.Api.Data;
 using SystemRD1.Business.Contracts.Notifiers;
 using SystemRD1.Business.Contracts.Services;
 using SystemRD1.Business.Notifications;
@@ -11,19 +15,26 @@ namespace SystemRD1.Api.Configurations
 {
     public static class DependencyInjectionConfiguration
     {
-        public static void AddDependencyInjectionConfiguration(this IServiceCollection service)
+        public static void AddDependencyInjectionConfiguration(this IServiceCollection services)
         {
             //Repositories
-            service.AddScoped<ICustomerRepository, CustomerRepository>();
+            services.AddScoped<ICustomerRepository, CustomerRepository>();
 
             //Services
-            service.AddScoped<ICustomerService, CustomerService>();
+            services.AddScoped<ICustomerService, CustomerService>();
 
             //Notifier
-            service.AddScoped<INotifier, Notifier>();
+            services.AddScoped<INotifier, Notifier>();
 
-            //Context
-            service.AddScoped<SystemContext>();
+            //Context :: SystemContext
+            services.AddScoped<SystemContext>();
+
+            //Context :: IdentityContext
+            services.AddScoped<IdentityContext>();
+
+            //Swagger
+            services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
+            
         }
     }
 }

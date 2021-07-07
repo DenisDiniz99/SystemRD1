@@ -12,7 +12,8 @@ using SystemRD1.Domain.Entities;
 
 namespace SystemRD1.Api.Controllers.V1
 {
-    [Route("api/{controller}")]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiversion}/{controller}")]
     public class CustomersController : ApiController
     {
         private readonly ICustomerRepository _customerRepository;

@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SystemRD1.Api.Configurations;
+using SystemRD1.Api.Configurations.Swagger;
 
 namespace SystemRD1.Api
 {
@@ -21,19 +23,28 @@ namespace SystemRD1.Api
         {
             services.AddControllers();
 
+            //Identity
+            services.AddIdentityConfiguration(Configuration);
+
+            //Automapper Configuration
             services.AddAutoMapper(typeof(Startup));
+
+            //Api Configuration
+            services.AddApiConfiguration();
+
+            //Swagger
+            services.AddSwaggerConfig();
 
             //DataBase Configuration
             services.AddDbConfiguration(Configuration);
 
             //Dependency Injection Configuration
             services.AddDependencyInjectionConfiguration();
-
             
         }
 
         
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IApiVersionDescriptionProvider provider)
         {
             if (env.IsDevelopment())
             {
@@ -42,7 +53,11 @@ namespace SystemRD1.Api
 
             app.UseHttpsRedirection();
 
+            app.UseSwaggerConfiguration(provider);
+
             app.UseRouting();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 

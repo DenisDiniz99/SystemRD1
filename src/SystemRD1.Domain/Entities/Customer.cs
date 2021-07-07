@@ -15,7 +15,7 @@ namespace SystemRD1.Domain.Entities
         public EDocumentType DocumentType { get; set; }
         public string Document { get; set; }
         public string Phone { get; set; }
-        public DateTime Birthday { get; set; }
+        public DateTime Birthday { get; set; }  
         public Address Address { get; set; }
         public bool Active { get; set; }
     }

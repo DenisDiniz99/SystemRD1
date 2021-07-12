@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using SystemRD1.Api.Configurations.Swagger;
@@ -17,6 +18,12 @@ namespace SystemRD1.Api.Configurations
     {
         public static void AddDependencyInjectionConfiguration(this IServiceCollection services)
         {
+            //Context :: SystemContext
+            services.AddScoped<SystemContext>();
+
+            //Context :: IdentityContext
+            services.AddScoped<IdentityContext>();
+
             //Repositories
             services.AddScoped<ICustomerRepository, CustomerRepository>();
 
@@ -26,11 +33,8 @@ namespace SystemRD1.Api.Configurations
             //Notifier
             services.AddScoped<INotifier, Notifier>();
 
-            //Context :: SystemContext
-            services.AddScoped<SystemContext>();
-
-            //Context :: IdentityContext
-            services.AddScoped<IdentityContext>();
+            //HttpContextAccessor
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             //Swagger
             services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();

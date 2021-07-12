@@ -1,12 +1,14 @@
-﻿
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
 using System.Threading.Tasks;
+using SystemRD1.Api.Extension;
 using SystemRD1.Api.ViewModels;
-using SystemRD1.Business.Notifications;
+using SystemRD1.Business.Contracts.Notifiers;
 
 namespace SystemRD1.Api.Controllers.V1
 {
@@ -16,10 +18,17 @@ namespace SystemRD1.Api.Controllers.V1
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
-        public AuthenticationController(Notifier notifier, UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager) : base (notifier) 
+        private readonly AppSettings _appSettings;
+
+
+        public AuthenticationController(INotifier notifier, 
+                                        UserManager<IdentityUser> userManager, 
+                                        SignInManager<IdentityUser> signInManager,
+                                        IOptions<AppSettings> appSettings) : base (notifier) 
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _appSettings = appSettings.Value;
         }
 
 
@@ -44,7 +53,7 @@ namespace SystemRD1.Api.Controllers.V1
             if (result.Succeeded)
             {
                 await _signInManager.SignInAsync(user, false);
-                return ResponsePost(result);
+                return ResponsePost(GenerateJwt());
             }
 
             foreach(var error in result.Errors)
@@ -68,7 +77,7 @@ namespace SystemRD1.Api.Controllers.V1
 
             if (result.Succeeded)
             {
-                return ResponsePost(loginUser);
+                return ResponsePost(GenerateJwt());
             }
 
             if (result.IsLockedOut)
@@ -79,6 +88,23 @@ namespace SystemRD1.Api.Controllers.V1
 
             NotifyError("Usuário ou senha inválidos");
             return ResponsePost(loginUser);
+        }
+
+        private string GenerateJwt()
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
+            var token = tokenHandler.CreateToken(new SecurityTokenDescriptor
+            {
+                Issuer = _appSettings.Issuer,
+                Audience = _appSettings.ValidIn,
+                Expires = DateTime.UtcNow.AddHours(_appSettings.ExpirationHours),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256)
+            });
+
+            var encodedToken = tokenHandler.WriteToken(token);
+
+            return encodedToken;
         }
     }
 }

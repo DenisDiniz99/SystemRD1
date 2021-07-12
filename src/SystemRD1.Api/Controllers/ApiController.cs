@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using SystemRD1.Business.Contracts.Notifiers;

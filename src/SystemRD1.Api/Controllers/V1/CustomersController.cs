@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using SystemRD1.Api.ViewModels;
 using SystemRD1.Business.Contracts.Notifiers;
@@ -12,6 +12,7 @@ using SystemRD1.Domain.Entities;
 
 namespace SystemRD1.Api.Controllers.V1
 {
+    [Authorize]
     [ApiVersion("1.0")]
     [Route("api/v{version:apiversion}/{controller}")]
     public class CustomersController : ApiController
@@ -29,6 +30,7 @@ namespace SystemRD1.Api.Controllers.V1
         }
 
 
+        [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CustomerViewModel>>> Get()
         {

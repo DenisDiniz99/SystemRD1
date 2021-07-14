@@ -37,6 +37,7 @@ namespace SystemRD1.Api.Controllers.V1
             return ResponseGet(_mapper.Map<IEnumerable<CustomerViewModel>>(await _customerRepository.GetAllAsync()));
         }
 
+        [Authorize(Policy = "Write")]
         [HttpGet("{id:guid}")]
         public async Task<ActionResult<CustomerViewModel>> Get(Guid id)
         {

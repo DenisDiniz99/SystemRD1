@@ -4,6 +4,8 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 using SystemRD1.Api.Extension;
@@ -53,7 +55,7 @@ namespace SystemRD1.Api.Controllers.V1
             if (result.Succeeded)
             {
                 await _signInManager.SignInAsync(user, false);
-                return ResponsePost(GenerateJwt());
+                return ResponsePost(await GenerateJwt(registerUser.Email));
             }
 
             foreach(var error in result.Errors)
@@ -77,7 +79,7 @@ namespace SystemRD1.Api.Controllers.V1
 
             if (result.Succeeded)
             {
-                return ResponsePost(GenerateJwt());
+                return ResponsePost(await GenerateJwt(loginUser.Email));
             }
 
             if (result.IsLockedOut)
@@ -90,12 +92,14 @@ namespace SystemRD1.Api.Controllers.V1
             return ResponsePost(loginUser);
         }
 
-        private string GenerateJwt()
+        private async Task<string> GenerateJwt(string email)
         {
+            var identityClaims = await GetClaimsIdentity(email);
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
             var token = tokenHandler.CreateToken(new SecurityTokenDescriptor
             {
+                Subject = identityClaims,
                 Issuer = _appSettings.Issuer,
                 Audience = _appSettings.ValidIn,
                 Expires = DateTime.UtcNow.AddHours(_appSettings.ExpirationHours),
@@ -106,5 +110,31 @@ namespace SystemRD1.Api.Controllers.V1
 
             return encodedToken;
         }
+
+        private async Task<ClaimsIdentity> GetClaimsIdentity(string emailUser)
+        {
+            var identityUser = await _userManager.FindByEmailAsync(emailUser);
+            var claims = await _userManager.GetClaimsAsync(identityUser);
+            var roles = await _userManager.GetRolesAsync(identityUser);
+
+            claims.Add(new Claim(JwtRegisteredClaimNames.Sub, identityUser.Id));
+            claims.Add(new Claim(JwtRegisteredClaimNames.Email, identityUser.Email));
+            claims.Add(new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()));
+            claims.Add(new Claim(JwtRegisteredClaimNames.Nbf, ToUnixEpochDate(DateTime.UtcNow).ToString()));
+            claims.Add(new Claim(JwtRegisteredClaimNames.Iat, ToUnixEpochDate(DateTime.UtcNow).ToString(), ClaimValueTypes.Integer64));
+
+            foreach(var role in roles)
+            {
+                claims.Add(new Claim("role", role));
+            }
+
+            var claimIdentity = new ClaimsIdentity();
+            claimIdentity.AddClaims(claims);
+
+            return claimIdentity;
+        }
+
+        private static long ToUnixEpochDate(DateTime date)
+            => (long)Math.Round((date.ToUniversalTime() - new DateTimeOffset(1970, 1, 1, 0, 0, 0, TimeSpan.Zero)).TotalSeconds);
     }
 }

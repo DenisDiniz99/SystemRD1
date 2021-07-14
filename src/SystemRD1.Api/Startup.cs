@@ -40,6 +40,9 @@ namespace SystemRD1.Api
 
             //Dependency Injection Configuration
             services.AddDependencyInjectionConfiguration();
+
+            //Policys - Claims
+            services.AddPolicysConfiguration();
             
         }
 

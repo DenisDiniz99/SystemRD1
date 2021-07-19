@@ -1,8 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace SystemRD1.Api.Configurations
 {
@@ -10,10 +6,11 @@ namespace SystemRD1.Api.Configurations
     {
         public static IServiceCollection AddPolicysConfiguration(this IServiceCollection services)
         {
+            string[] claimsValue = new string[] { "Add", "Edit", "Delete" };
+
             services.AddAuthorization(option =>
             {
-                option.AddPolicy("Write", policy => policy.RequireClaim("Write"));
-                option.AddPolicy("Read", policy => policy.RequireClaim("Read"));
+                option.AddPolicy("WriterCustomer", policy => policy.RequireClaim("Customer", "Add", "Edit", "Delete"));
             });
 
             return services;

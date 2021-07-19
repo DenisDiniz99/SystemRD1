@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
+using System.Collections;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 using SystemRD1.Api.Extension;
@@ -47,11 +47,13 @@ namespace SystemRD1.Api.Controllers.V1
             {
                 UserName = registerUser.Email,
                 Email = registerUser.Email,
-                EmailConfirmed = true
+                EmailConfirmed = true,                
             };
 
+            
             var result = await _userManager.CreateAsync(user, registerUser.Passwaord);
 
+            
             if (result.Succeeded)
             {
                 await _signInManager.SignInAsync(user, false);
@@ -65,6 +67,7 @@ namespace SystemRD1.Api.Controllers.V1
 
             return ResponsePost(registerUser);
         }
+
 
         [HttpPost("login")]
         public async Task<ActionResult> Login(LoginUserViewModel loginUser)

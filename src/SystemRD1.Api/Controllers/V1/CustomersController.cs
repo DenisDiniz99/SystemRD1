@@ -30,19 +30,20 @@ namespace SystemRD1.Api.Controllers.V1
         }
 
 
-        [AllowAnonymous]
+        
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CustomerViewModel>>> Get()
         {
             return ResponseGet(_mapper.Map<IEnumerable<CustomerViewModel>>(await _customerRepository.GetAllAsync()));
         }
 
-        [Authorize(Policy = "Write")]
+        
         [HttpGet("{id:guid}")]
         public async Task<ActionResult<CustomerViewModel>> Get(Guid id)
         {
             return ResponseGet(_mapper.Map<CustomerViewModel>(await _customerRepository.GetByIdAsync(id)));
         }
+
 
         [HttpGet("name/{name}")]
         public async Task<ActionResult<IEnumerable<CustomerViewModel>>> GetByName(string name)
@@ -50,12 +51,14 @@ namespace SystemRD1.Api.Controllers.V1
             return ResponseGet(_mapper.Map<IEnumerable<CustomerViewModel>>(await _customerRepository.GetByName(name)));
         }
 
+
         [HttpGet("document/{document}")]
         public async Task<ActionResult<CustomerViewModel>> GetByDocument(string document)
         {
             return ResponseGet(_mapper.Map<CustomerViewModel>(await _customerRepository.GetByDocument(document)));
         }
 
+        [Authorize(Policy = "WriterCustomer")]
         [HttpPost]
         public async Task<ActionResult<CustomerViewModel>> Post(CustomerViewModel customerViewModel)
         {
@@ -78,6 +81,8 @@ namespace SystemRD1.Api.Controllers.V1
             return ResponsePost(customerViewModel);
         }
 
+
+        [Authorize("WriterCustomer")]
         [HttpPut]
         public async Task<ActionResult<CustomerViewModel>> Put(CustomerViewModel customerViewModel)
         {
@@ -98,6 +103,8 @@ namespace SystemRD1.Api.Controllers.V1
             return ResponsePut();
         }
 
+
+        [Authorize("WriterCustomer")]
         [HttpDelete("{id:guid}")]
         public async Task<ActionResult<CustomerViewModel>> Delete(Guid id)
         {

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -52,7 +52,7 @@ namespace SystemRD1.Api.Controllers.V1
 
             
             var result = await _userManager.CreateAsync(user, registerUser.Passwaord);
-
+            
             
             if (result.Succeeded)
             {
@@ -93,6 +93,62 @@ namespace SystemRD1.Api.Controllers.V1
 
             NotifyError("Usuário ou senha inválidos");
             return ResponsePost(loginUser);
+        }
+
+
+        [HttpPost("profiles")]
+        public async Task<ActionResult> AddUserProfile(ProfileViewModel profileViewModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                NotifyInvalidModelError(ModelState);
+                return ModelStateErrorResponseError();
+            }
+
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+
+            if(user == null)
+            {
+                NotifyError("Usuário inexistente.");
+                return ResponsePost(user);
+            }
+
+            var claims = new List<Claim>();
+            
+            foreach(var c in profileViewModel.ClaimsViewModel)
+            {
+                if(c.ClaimType == string.Empty || c.ClaimValue == string.Empty)
+                {
+                    claims.Clear();
+                    break;
+                }
+                Claim claim = new Claim(c.ClaimType, c.ClaimValue);
+                claims.Add(claim);
+            }
+
+            if(claims.Count == 0)
+            {
+                NotifyError("Permissões não selecionadas ou incorretas.");
+                return ResponsePost(claims);
+            }
+
+            var result = await _userManager.AddClaimsAsync(user, claims);
+
+            if (!result.Succeeded)
+            {
+                NotifyError("Erro ao criar permissões.");
+                return ResponsePost(result);
+            }
+
+            return ResponsePost(result);
+        }
+
+
+        [HttpPost("logout")]
+        public async Task<ActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            return ResponsePost();
         }
 
         private async Task<string> GenerateJwt(string email)
@@ -139,5 +195,7 @@ namespace SystemRD1.Api.Controllers.V1
 
         private static long ToUnixEpochDate(DateTime date)
             => (long)Math.Round((date.ToUniversalTime() - new DateTimeOffset(1970, 1, 1, 0, 0, 0, TimeSpan.Zero)).TotalSeconds);
+
+        
     }
 }

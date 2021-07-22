@@ -8,9 +8,13 @@ namespace SystemRD1.Api.Configurations
         {
             string[] claimsValue = new string[] { "Add", "Edit", "Delete" };
 
-            services.AddAuthorization(option =>
+            services.AddAuthorization(options =>
             {
-                option.AddPolicy("WriterCustomer", policy => policy.RequireClaim("Customer", "Add", "Edit", "Delete"));
+                options.AddPolicy("WriterCustomer", policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireClaim("customer", claimsValue);
+                });
             });
 
             return services;

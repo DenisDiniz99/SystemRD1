@@ -5,6 +5,9 @@ namespace SystemRD1.Api.Data
 {
     public class IdentityContext : IdentityDbContext
     {
-        public IdentityContext(DbContextOptions<IdentityContext> options) : base(options) { }
+        public IdentityContext(DbContextOptions<IdentityContext> options) : base(options) 
+        {
+            ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+        }
     }
 }

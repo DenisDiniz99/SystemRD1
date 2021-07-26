@@ -13,7 +13,7 @@ namespace SystemRD1.Api.Configurations
                 options.AddPolicy("WriterCustomer", policy =>
                 {
                     policy.RequireAuthenticatedUser();
-                    policy.RequireClaim("customer", claimsValue);
+                    policy.RequireClaim("Customer", claimsValue);
                 });
             });
 

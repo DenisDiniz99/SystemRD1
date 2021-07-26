@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -16,6 +17,7 @@ namespace SystemRD1.Api.Controllers.V1
 {
     [ApiVersion("1.0")]
     [Route("api/v{version:apiversion}/{controller}")]
+    [Authorize]
     public class AuthenticationController : ApiController
     {
         private readonly UserManager<IdentityUser> _userManager;
@@ -33,7 +35,7 @@ namespace SystemRD1.Api.Controllers.V1
             _appSettings = appSettings.Value;
         }
 
-
+        [AllowAnonymous]
         [HttpPost("register")]
         public async Task<ActionResult> Register(RegisterUserViewModel registerUser)
         {
@@ -68,7 +70,7 @@ namespace SystemRD1.Api.Controllers.V1
             return ResponsePost(registerUser);
         }
 
-
+        [AllowAnonymous]
         [HttpPost("login")]
         public async Task<ActionResult> Login(LoginUserViewModel loginUser)
         {
@@ -93,6 +95,40 @@ namespace SystemRD1.Api.Controllers.V1
 
             NotifyError("Usuário ou senha inválidos");
             return ResponsePost(loginUser);
+        }
+
+
+        [HttpPost("changePassword")]
+        public async Task<ActionResult> ChangePassword(ChangePasswordUserViewModel changePasswordUser)
+        {
+            if (!ModelState.IsValid)
+            {
+                NotifyInvalidModelError(ModelState);
+                return ModelStateErrorResponseError();
+            }
+
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+
+            if(changePasswordUser.NewPassword != changePasswordUser.ConfirmNewPassword)
+            {
+                NotifyError("As senhas não correspondem.");
+                return ResponsePost(changePasswordUser);
+            }
+
+            var result = await _userManager.ChangePasswordAsync(user, changePasswordUser.CurrentPassword, changePasswordUser.NewPassword);
+
+            if (result.Succeeded)
+            {
+                await _signInManager.SignOutAsync();
+                return ResponsePost(result);
+            }
+
+            foreach(var error in result.Errors)
+            {
+                NotifyError(error.Description);
+            }
+
+            return ResponsePost(changePasswordUser);
         }
 
 
@@ -150,6 +186,7 @@ namespace SystemRD1.Api.Controllers.V1
             await _signInManager.SignOutAsync();
             return ResponsePost();
         }
+
 
         private async Task<string> GenerateJwt(string email)
         {

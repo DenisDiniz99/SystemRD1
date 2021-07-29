@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
+using System;
 using System.Text;
 using SystemRD1.Api.Data;
 using SystemRD1.Api.Extension;
@@ -15,6 +15,7 @@ namespace SystemRD1.Api.Configurations
     {
         public static IServiceCollection AddIdentityConfiguration(this IServiceCollection services, IConfiguration configuration)
         {
+            //Identity
             services.AddDbContext<IdentityContext>(options => 
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
@@ -22,6 +23,15 @@ namespace SystemRD1.Api.Configurations
                 .AddEntityFrameworkStores<IdentityContext>()
                 .AddErrorDescriber<IdentityMessagesInPortuguese>()
                 .AddDefaultTokenProviders();
+
+            //Configura o Lockout - bloqueio do usuário
+            services.Configure<IdentityOptions>(options =>
+            {
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+                options.Lockout.MaxFailedAccessAttempts = 5;
+                options.Lockout.AllowedForNewUsers = true;
+            });  
+            
 
 
             //JWT - Jason Web Token Configuration

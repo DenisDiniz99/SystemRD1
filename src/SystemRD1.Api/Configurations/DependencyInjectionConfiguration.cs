@@ -4,6 +4,7 @@ using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using SystemRD1.Api.Configurations.Swagger;
 using SystemRD1.Api.Data;
+using SystemRD1.Api.Services.Email;
 using SystemRD1.Business.Contracts.Notifiers;
 using SystemRD1.Business.Contracts.Services;
 using SystemRD1.Business.Notifications;
@@ -38,6 +39,9 @@ namespace SystemRD1.Api.Configurations
 
             //Swagger
             services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
+
+            //SenderEmail
+            services.AddTransient<IEmailSender, EmailSender>();
             
         }
     }

@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SystemRD1.Business", "src\S
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SystemRD1.Data", "src\SystemRD1.Data\SystemRD1.Data.csproj", "{29C17E4E-16C7-43ED-B158-E3B51DC61463}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SystemRD1.Api", "src\SystemRD1.Api\SystemRD1.Api.csproj", "{6C214C9F-4FD8-468D-BFF9-54ADB2E16007}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SystemRD1.Api", "src\SystemRD1.Api\SystemRD1.Api.csproj", "{6C214C9F-4FD8-468D-BFF9-54ADB2E16007}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

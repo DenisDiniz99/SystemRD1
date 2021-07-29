@@ -43,7 +43,9 @@ namespace SystemRD1.Api
 
             //Policys - Claims
             services.AddPolicysConfiguration();
-            
+
+            //EmailSender
+            services.AddEmailConfiguration(Configuration);
         }
 
         

@@ -10,6 +10,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using SystemRD1.Api.Extension;
+using SystemRD1.Api.Services.Email;
 using SystemRD1.Api.ViewModels;
 using SystemRD1.Business.Contracts.Notifiers;
 
@@ -20,24 +21,28 @@ namespace SystemRD1.Api.Controllers.V1
     [Authorize]
     public class AuthenticationController : ApiController
     {
+        
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly AppSettings _appSettings;
+        private readonly IEmailSender _emailSender;
 
 
         public AuthenticationController(INotifier notifier, 
                                         UserManager<IdentityUser> userManager, 
                                         SignInManager<IdentityUser> signInManager,
-                                        IOptions<AppSettings> appSettings) : base (notifier) 
+                                        IOptions<AppSettings> appSettings,
+                                        IEmailSender emailSender) : base (notifier) 
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _appSettings = appSettings.Value;
+            _emailSender = emailSender;
         }
 
         [AllowAnonymous]
         [HttpPost("register")]
-        public async Task<ActionResult> Register(RegisterUserViewModel registerUser)
+        public async Task<ActionResult> Register(RegisterUserViewModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -47,19 +52,19 @@ namespace SystemRD1.Api.Controllers.V1
 
             var user = new IdentityUser()
             {
-                UserName = registerUser.Email,
-                Email = registerUser.Email,
+                UserName = model.Email,
+                Email = model.Email,
                 EmailConfirmed = true,                
             };
 
             
-            var result = await _userManager.CreateAsync(user, registerUser.Passwaord);
+            var result = await _userManager.CreateAsync(user, model.Passwaord);
             
             
             if (result.Succeeded)
             {
                 await _signInManager.SignInAsync(user, false);
-                return ResponsePost(await GenerateJwt(registerUser.Email));
+                return ResponsePost(await GenerateJwt(model.Email));
             }
 
             foreach(var error in result.Errors)
@@ -67,12 +72,12 @@ namespace SystemRD1.Api.Controllers.V1
                 NotifyError(error.Description);
             }
 
-            return ResponsePost(registerUser);
+            return ResponsePost(model);
         }
 
         [AllowAnonymous]
         [HttpPost("login")]
-        public async Task<ActionResult> Login(LoginUserViewModel loginUser)
+        public async Task<ActionResult> Login(LoginUserViewModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -80,26 +85,26 @@ namespace SystemRD1.Api.Controllers.V1
                 return ModelStateErrorResponseError();
             }
 
-            var result = await _signInManager.PasswordSignInAsync(loginUser.Email, loginUser.Passwaord, false, true);
+            var result = await _signInManager.PasswordSignInAsync(model.Email, model.Passwaord, false, true);
 
             if (result.Succeeded)
             {
-                return ResponsePost(await GenerateJwt(loginUser.Email));
+                return ResponsePost(await GenerateJwt(model.Email));
             }
 
             if (result.IsLockedOut)
             {
                 NotifyError("Usuário bloqueado por tentativas inválidas");
-                return ResponsePost(loginUser);
+                return ResponsePost(model);
             }
 
             NotifyError("Usuário ou senha inválidos");
-            return ResponsePost(loginUser);
+            return ResponsePost(model);
         }
 
 
         [HttpPost("changePassword")]
-        public async Task<ActionResult> ChangePassword(ChangePasswordUserViewModel changePasswordUser)
+        public async Task<ActionResult> ChangePassword(ChangePasswordUserViewModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -109,13 +114,7 @@ namespace SystemRD1.Api.Controllers.V1
 
             var user = await _userManager.GetUserAsync(HttpContext.User);
 
-            if(changePasswordUser.NewPassword != changePasswordUser.ConfirmNewPassword)
-            {
-                NotifyError("As senhas não correspondem.");
-                return ResponsePost(changePasswordUser);
-            }
-
-            var result = await _userManager.ChangePasswordAsync(user, changePasswordUser.CurrentPassword, changePasswordUser.NewPassword);
+            var result = await _userManager.ChangePasswordAsync(user, model.CurrentPassword,  model.NewPassword);
 
             if (result.Succeeded)
             {
@@ -128,12 +127,73 @@ namespace SystemRD1.Api.Controllers.V1
                 NotifyError(error.Description);
             }
 
-            return ResponsePost(changePasswordUser);
+            return ResponsePost(model);
         }
 
 
+        [AllowAnonymous]
+        [HttpPost("forgotPassword")]
+        public async Task<ActionResult> ForgotPassword(ForgotPasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                NotifyInvalidModelError(ModelState);
+                return ModelStateErrorResponseError();
+            }
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+
+            if (user == null)
+            {
+                NotifyError("E-mail incorreto.");
+                return ResponsePost();
+            }
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+            var callBackUrl = $"{Request.Scheme}://localhost:44328/api/v1/authentication/resetPassword?userId={user.Id}&token={token}";
+
+            await _emailSender.SendEmailAsync(user.Email, "Recuperação de Senha", "Recupere por - " + callBackUrl);
+
+            return ResponsePost(callBackUrl);
+        }
+
+
+        [AllowAnonymous]
+        [HttpPost("resetPassword")]
+        public async Task<ActionResult> ResetPassword(Guid userId, string token, ResetPasswordUserViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                NotifyInvalidModelError(ModelState);
+                return ModelStateErrorResponseError();
+            }
+
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+
+            if(user == null)
+            {
+                NotifyError("Usuário incorreto.");
+                return ResponsePost();
+            }
+
+            var result = await _userManager.ResetPasswordAsync(user, token, model.NewPassword);
+
+            if (result.Succeeded)
+            {
+                return ResponsePost(result);
+            }
+
+            foreach(var error in result.Errors)
+            {
+                NotifyError(error.Description);
+            }
+
+            return ResponsePost();
+        }
+
         [HttpPost("profiles")]
-        public async Task<ActionResult> AddUserProfile(ProfileViewModel profileViewModel)
+        public async Task<ActionResult> AddUserProfile(ProfileViewModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -151,7 +211,7 @@ namespace SystemRD1.Api.Controllers.V1
 
             var claims = new List<Claim>();
             
-            foreach(var c in profileViewModel.ClaimsViewModel)
+            foreach(var c in model.ClaimsViewModel)
             {
                 if(c.ClaimType == string.Empty || c.ClaimValue == string.Empty)
                 {

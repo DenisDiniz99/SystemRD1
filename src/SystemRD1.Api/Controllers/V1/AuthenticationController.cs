@@ -293,6 +293,6 @@ namespace SystemRD1.Api.Controllers.V1
         private static long ToUnixEpochDate(DateTime date)
             => (long)Math.Round((date.ToUniversalTime() - new DateTimeOffset(1970, 1, 1, 0, 0, 0, TimeSpan.Zero)).TotalSeconds);
 
-        
+       
     }
 }

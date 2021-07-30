@@ -30,7 +30,13 @@ namespace SystemRD1.Api.Configurations
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
                 options.Lockout.MaxFailedAccessAttempts = 5;
                 options.Lockout.AllowedForNewUsers = true;
-            });  
+            });
+
+            //Configura TokenProvider
+            services.Configure<IdentityOptions>(options =>
+            {
+                options.Tokens.PasswordResetTokenProvider = TokenOptions.DefaultEmailProvider;
+            });
             
 
 

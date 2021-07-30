@@ -11,9 +11,20 @@ namespace SystemRD1.Api
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IHostEnvironment hostEnvironment)
         {
-            Configuration = configuration;
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(hostEnvironment.ContentRootPath)
+                .AddJsonFile("appsettings.json", true, true)
+                .AddJsonFile($"appsettings.{hostEnvironment.EnvironmentName}.json", true, true)
+                .AddEnvironmentVariables();
+
+            if (!hostEnvironment.IsDevelopment())
+            {
+                builder.AddUserSecrets<Startup>();
+            }
+
+            Configuration = builder.Build();
         }
 
         public IConfiguration Configuration { get; }
@@ -21,30 +32,20 @@ namespace SystemRD1.Api
         
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
-
-            //Identity
             services.AddIdentityConfiguration(Configuration);
 
-            //Automapper Configuration
             services.AddAutoMapper(typeof(Startup));
 
-            //Api Configuration
             services.AddApiConfiguration();
 
-            //Swagger
             services.AddSwaggerConfig();
 
-            //DataBase Configuration
             services.AddDbConfiguration(Configuration);
 
-            //Dependency Injection Configuration
             services.AddDependencyInjectionConfiguration();
 
-            //Policys - Claims
             services.AddPolicysConfiguration();
 
-            //EmailSender
             services.AddEmailConfiguration(Configuration);
         }
 

@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SystemRD1.Data", "src\Syste
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SystemRD1.Api", "src\SystemRD1.Api\SystemRD1.Api.csproj", "{6C214C9F-4FD8-468D-BFF9-54ADB2E16007}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SystemRD1.WebApp", "src\SystemRD1.WebApp\SystemRD1.WebApp.csproj", "{62F7B878-E3E4-400E-AA33-B880FE9FE9FC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SystemRD1.WebApp", "src\SystemRD1.WebApp\SystemRD1.WebApp.csproj", "{62F7B878-E3E4-400E-AA33-B880FE9FE9FC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

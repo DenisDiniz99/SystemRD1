@@ -1,13 +1,9 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using SystemRD1.WebApp.Configurations;
 
 namespace SystemRD1.WebApp
 {
@@ -24,7 +20,10 @@ namespace SystemRD1.WebApp
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+            services.AddIdentityConfiguration();
+            services.AddDependencyInjection();
         }
+
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -44,7 +43,7 @@ namespace SystemRD1.WebApp
 
             app.UseRouting();
 
-            app.UseAuthorization();
+            app.UseIdentityConfiguration();
 
             app.UseEndpoints(endpoints =>
             {

@@ -53,13 +53,16 @@ namespace SystemRD1.WebApp.Controllers
 
         [HttpPost]
         [Route("entrar")]
-        private async Task<IActionResult> Login(LoginUserViewModel model, string returnUrl = null)
+        public async Task<IActionResult> Login(LoginUserViewModel model, string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
 
             if (!ModelState.IsValid) return View(model);
 
+            
             var response = await _authenticationServices.LoginUser(model);
+
+            if (ResponseModelStateErrors(response.ResponseResult)) return View(model);
 
             await ConfirmLogin(response);
 

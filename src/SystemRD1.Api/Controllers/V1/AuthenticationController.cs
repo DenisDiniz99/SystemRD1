@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -85,7 +86,7 @@ namespace SystemRD1.Api.Controllers.V1
                 return ModelStateErrorResponseError();
             }
 
-            var result = await _signInManager.PasswordSignInAsync(model.Email, model.Passwaord, false, true);
+            var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, false, true);
 
             if (result.Succeeded)
             {
@@ -248,24 +249,23 @@ namespace SystemRD1.Api.Controllers.V1
         }
 
 
-        private async Task<string> GenerateJwt(string email)
+
+
+
+
+
+        //Generate Json Web Token
+        private async Task<ResponseResultLogin> GenerateJwt(string email)
         {
+            var user = await _userManager.FindByEmailAsync(email);
+            var claims = await _userManager.GetClaimsAsync(user);
             var identityClaims = await GetClaimsIdentity(email);
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
-            var token = tokenHandler.CreateToken(new SecurityTokenDescriptor
-            {
-                Subject = identityClaims,
-                Issuer = _appSettings.Issuer,
-                Audience = _appSettings.ValidIn,
-                Expires = DateTime.UtcNow.AddHours(_appSettings.ExpirationHours),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256)
-            });
+            var encodedToken = GetEncodedToken(identityClaims);
 
-            var encodedToken = tokenHandler.WriteToken(token);
-
-            return encodedToken;
+            return GenerateResponseUser(encodedToken, user, claims);
         }
+
+
 
         private async Task<ClaimsIdentity> GetClaimsIdentity(string emailUser)
         {
@@ -288,6 +288,43 @@ namespace SystemRD1.Api.Controllers.V1
             claimIdentity.AddClaims(claims);
 
             return claimIdentity;
+        }
+
+        //novo
+        private string GetEncodedToken(ClaimsIdentity claimsIdentity)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
+            var token = tokenHandler.CreateToken(new SecurityTokenDescriptor
+            {
+                Subject = claimsIdentity,
+                Issuer = _appSettings.Issuer,
+                Audience = _appSettings.ValidIn,
+                Expires = DateTime.UtcNow.AddHours(_appSettings.ExpirationHours),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256)
+            });
+
+           return tokenHandler.WriteToken(token);
+        }
+
+        //novo
+        private ResponseResultLogin GenerateResponseUser(string encodedToken, IdentityUser identityUser, IEnumerable<Claim> claims)
+        {
+            return new ResponseResultLogin
+            {
+                AccessToken = encodedToken,
+                ExpiresIn = TimeSpan.FromHours(1).TotalSeconds,
+                ResponseUser = new ResponseUser
+                {
+                    Id = identityUser.Id,
+                    Email = identityUser.Email,
+                    Claims = claims.Select(c => new ResponseUserClaims
+                    {
+                        Type = c.Type,
+                        Value = c.Value
+                    })
+                }
+            };
         }
 
         private static long ToUnixEpochDate(DateTime date)

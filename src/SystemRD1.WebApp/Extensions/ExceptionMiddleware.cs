@@ -1,5 +1,5 @@
 ﻿using Grpc.Core;
-using Microsoft.AspNetCore.Authentication;
+using SystemRD1.WebApp.Services.Authentication;
 using Microsoft.AspNetCore.Http;
 using Polly.CircuitBreaker;
 using Refit;
@@ -12,14 +12,14 @@ namespace SystemRD1.WebApp.Extensions
     public class ExceptionMiddleware
     {
         private readonly RequestDelegate _next;
-        private static IAuthenticationService _authService;
+        private static IAuthenticationServices _authService;
 
         public ExceptionMiddleware(RequestDelegate next)
         {
             _next = next;
         }
 
-        public async Task InvokeAsync(HttpContext httpContext, IAuthenticationService authService)
+        public async Task InvokeAsync(HttpContext httpContext, IAuthenticationServices authService)
         {
             _authService = authService;
 
@@ -69,7 +69,10 @@ namespace SystemRD1.WebApp.Extensions
         {
             if(statusCode == HttpStatusCode.Unauthorized)
             {
-                //
+                if (_authService.ExpiredToken())
+                {
+                    httpContext.Response.Redirect(httpContext.Request.Path);
+                }
             }
 
             httpContext.Response.Redirect($"/login?ReturnUrl={ httpContext.Request.Path}");

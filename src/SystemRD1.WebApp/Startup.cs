@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SystemRD1.WebApp.Configurations;
+using SystemRD1.WebApp.Extensions;
 
 namespace SystemRD1.WebApp
 {
@@ -58,6 +59,8 @@ namespace SystemRD1.WebApp
             app.UseRouting();
 
             app.UseIdentityConfiguration();
+
+            app.UseMiddleware<ExceptionMiddleware>();
 
             app.UseEndpoints(endpoints =>
             {

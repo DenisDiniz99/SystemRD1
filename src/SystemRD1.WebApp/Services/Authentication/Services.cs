@@ -19,8 +19,8 @@ namespace SystemRD1.WebApp.Services.Authentication
             {
                 PropertyNameCaseInsensitive = true
             };
-
-            return JsonSerializer.Deserialize<T>(await responseMessage.Content.ReadAsStringAsync(), options);
+            
+            return JsonSerializer.Deserialize<T>(await responseMessage.Content.ReadAsStringAsync(), options); ;
         }
 
         protected bool HandleErrors(HttpResponseMessage response)

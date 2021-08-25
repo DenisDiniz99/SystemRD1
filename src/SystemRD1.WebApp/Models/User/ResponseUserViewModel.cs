@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using SystemRD1.WebApp.Extensions;
 
 namespace SystemRD1.WebApp.Models.User

@@ -5,7 +5,10 @@ namespace SystemRD1.WebApp.Services.Authentication
 {
     public interface IAuthenticationServices
     {
-        Task<ResponseUserViewModel> RegisterUser(RegisterUserViewModel model);
-        Task<ResponseUserViewModel> LoginUser(LoginUserViewModel model);
+        Task<ResponseUserViewModel> RegisterService(RegisterUserViewModel model);
+        Task<ResponseUserViewModel> LoginService(LoginUserViewModel model);
+        Task LogoutService();
+        Task ConfirmLogin(ResponseUserViewModel responseUserViewModel);
+        bool ExpiredToken();
     }
 }

@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using SystemRD1.Business.Contracts.Notifiers;
 
 namespace SystemRD1.Business.Notifications

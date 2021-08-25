@@ -59,7 +59,7 @@ namespace SystemRD1.Api.Controllers.V1
             };
 
             
-            var result = await _userManager.CreateAsync(user, model.Passwaord);
+            var result = await _userManager.CreateAsync(user, model.Password);
             
             
             if (result.Succeeded)
@@ -255,7 +255,7 @@ namespace SystemRD1.Api.Controllers.V1
 
 
         //Generate Json Web Token
-        private async Task<ResponseResultLogin> GenerateJwt(string email)
+        private async Task<ResponseResult> GenerateJwt(string email)
         {
             var user = await _userManager.FindByEmailAsync(email);
             var claims = await _userManager.GetClaimsAsync(user);
@@ -308,9 +308,9 @@ namespace SystemRD1.Api.Controllers.V1
         }
 
         //novo
-        private ResponseResultLogin GenerateResponseUser(string encodedToken, IdentityUser identityUser, IEnumerable<Claim> claims)
+        private ResponseResult GenerateResponseUser(string encodedToken, IdentityUser identityUser, IEnumerable<Claim> claims)
         {
-            return new ResponseResultLogin
+            return new ResponseResult
             {
                 AccessToken = encodedToken,
                 ExpiresIn = TimeSpan.FromHours(1).TotalSeconds,

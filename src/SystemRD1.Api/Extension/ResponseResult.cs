@@ -2,7 +2,7 @@
 
 namespace SystemRD1.Api.Extension
 {
-    public class ResponseResultLogin
+    public class ResponseResult
     { 
         public string AccessToken { get; set; }
         public double ExpiresIn { get; set; }
@@ -20,5 +20,25 @@ namespace SystemRD1.Api.Extension
     {
         public string Type { get; set; }
         public string Value { get; set; }
+    }
+
+    public class ResponseResultErrors
+    {
+        public ResponseResultErrors()
+        {
+            Errors = new ResponseResultMessageErrors();
+        }
+        public string Title { get; set; }
+        public int Status { get; set; }
+        public ResponseResultMessageErrors Errors { get; set; }
+    }
+
+    public class ResponseResultMessageErrors
+    {
+        public ResponseResultMessageErrors()
+        {
+            Messages = new List<string>();
+        }
+        public List<string> Messages { get; set; }
     }
 }

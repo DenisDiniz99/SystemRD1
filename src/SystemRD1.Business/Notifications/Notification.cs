@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SystemRD1.Business.Notifications
+﻿namespace SystemRD1.Business.Notifications
 {
     public class Notification
     {

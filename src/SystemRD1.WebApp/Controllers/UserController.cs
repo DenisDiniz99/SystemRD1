@@ -1,10 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using SystemRD1.WebApp.Models.User;
 using SystemRD1.WebApp.Services.Authentication;
@@ -35,9 +29,9 @@ namespace SystemRD1.WebApp.Controllers
 
             if (!ModelState.IsValid) return View(model);
 
-            var response = await _authenticationServices.RegisterUser(model);
+            var response = await _authenticationServices.RegisterService(model);
 
-            await ConfirmLogin(response);
+            await _authenticationServices.ConfirmLogin(response);
 
             if (string.IsNullOrEmpty(returnUrl)) return RedirectToAction("Index", "Home");
 
@@ -60,40 +54,23 @@ namespace SystemRD1.WebApp.Controllers
             if (!ModelState.IsValid) return View(model);
 
             
-            var response = await _authenticationServices.LoginUser(model);
+            var response = await _authenticationServices.LoginService(model);
 
             if (ResponseModelStateErrors(response.ResponseResult)) return View(model);
 
-            await ConfirmLogin(response);
+            await _authenticationServices.ConfirmLogin(response);
 
             if (string.IsNullOrEmpty(returnUrl)) return RedirectToAction("Index", "Home");
 
             return LocalRedirect(returnUrl);
         }
 
-
-        private async Task ConfirmLogin(ResponseUserViewModel model)
+        [HttpGet]
+        [Route("sair")]
+        public async Task<IActionResult> Logout()
         {
-            var token = GetFormattedToken(model.AccessToken);
-
-            var claims = new List<Claim>();
-            claims.Add(new Claim("JWT", model.AccessToken));
-            claims.AddRange(token.Claims);
-
-            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-
-            var authProperties = new AuthenticationProperties
-            {
-                ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(60),
-                IsPersistent = true
-            };
-
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
-        }
-
-        private JwtSecurityToken GetFormattedToken(string token)
-        {
-            return new JwtSecurityTokenHandler().ReadToken(token) as JwtSecurityToken;
+            await _authenticationServices.LogoutService();
+            return RedirectToAction("Index", "Home");
         }
     }
 }

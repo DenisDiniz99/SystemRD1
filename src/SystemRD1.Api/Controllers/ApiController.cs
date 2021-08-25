@@ -3,8 +3,10 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SystemRD1.Api.Extension;
 using SystemRD1.Business.Contracts.Notifiers;
 using SystemRD1.Business.Notifications;
+using Microsoft.AspNetCore.Http;
 
 namespace SystemRD1.Api.Controllers
 {
@@ -52,7 +54,23 @@ namespace SystemRD1.Api.Controllers
             if (IsValidOperation())
                 return NoContent();
 
-            return BadRequest(_notifier.GetNotifications());
+            var notifications = _notifier.GetNotifications();
+            var errors = new List<string>();
+
+            foreach (var item in notifications)
+            {
+                errors.Add(item.Message);
+            }
+
+            return BadRequest(new ResponseResultErrors
+            {
+                Title = "Error",
+                Status = StatusCodes.Status400BadRequest,
+                Errors = new ResponseResultMessageErrors
+                {
+                    Messages = errors
+                }
+            });
         }
 
         protected ActionResult ResponseDelete(Guid id)
@@ -65,7 +83,23 @@ namespace SystemRD1.Api.Controllers
                 return Ok(id);
             }
 
-            return BadRequest(_notifier.GetNotifications());
+            var notifications = _notifier.GetNotifications();
+            var errors = new List<string>();
+
+            foreach (var item in notifications)
+            {
+                errors.Add(item.Message);
+            }
+
+            return BadRequest(new ResponseResultErrors
+            {
+                Title = "Error",
+                Status = StatusCodes.Status400BadRequest,
+                Errors = new ResponseResultMessageErrors
+                {
+                    Messages = errors
+                }
+            });
         }
 
 
@@ -79,7 +113,23 @@ namespace SystemRD1.Api.Controllers
                 return Ok(result);
             }
 
-            return BadRequest(_notifier.GetNotifications());
+            var notifications = _notifier.GetNotifications();
+            var errors = new List<string>();
+
+            foreach(var item in notifications)
+            {
+                errors.Add(item.Message);
+            }
+
+            return BadRequest(new ResponseResultErrors
+            {
+                Title = "Error",
+                Status = StatusCodes.Status400BadRequest,
+                Errors = new ResponseResultMessageErrors
+                {
+                    Messages = errors
+                }
+            });
         }
 
         protected void NotifyInvalidModelError(ModelStateDictionary modelState)

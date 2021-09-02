@@ -33,7 +33,7 @@
       }
     },
     "Self Hosted": {
-      "commandName": "Project",
+      "commandName": "IISExpress",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIROMENT": "Development"

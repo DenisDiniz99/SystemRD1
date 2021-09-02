@@ -21,6 +21,7 @@ namespace SystemRD1.WebApp.Controllers
             return View();
         }
 
+
         [HttpPost]
         [Route("nova-conta")]
         public async Task<IActionResult> Register(RegisterUserViewModel model, string returnUrl = null)

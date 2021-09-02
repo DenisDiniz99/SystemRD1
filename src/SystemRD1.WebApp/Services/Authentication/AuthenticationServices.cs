@@ -14,7 +14,7 @@ namespace SystemRD1.WebApp.Services.Authentication
 {
     public class AuthenticationServices : Services, IAuthenticationServices
     {
-        const string BASE_URL = "https://localhost:44328";
+        
         private readonly HttpClient _httpClient;
         private readonly IAuthenticationService _authenticationService;
         private readonly IAspNetUser _aspNetUser;
@@ -99,7 +99,7 @@ namespace SystemRD1.WebApp.Services.Authentication
         public bool ExpiredToken()
         {
             var token = _aspNetUser.GetUserToken();
-            if (token == null) return false;
+            if (token == "") return false;
 
             var tokenFormatted = GetFormattedToken(token);
             return tokenFormatted.ValidTo.ToLocalTime() < DateTime.Now;

@@ -4,10 +4,12 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using SystemRD1.WebApp.Extensions;
 
-namespace SystemRD1.WebApp.Services.Authentication
+namespace SystemRD1.WebApp.Services
 {
     public abstract class Services
     {
+        protected const string BASE_URL = "https://localhost:44328";
+
         protected StringContent GetContent(object data)
         {
             return new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json");

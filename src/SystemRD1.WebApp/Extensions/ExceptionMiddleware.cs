@@ -75,7 +75,7 @@ namespace SystemRD1.WebApp.Extensions
                 }
             }
 
-            httpContext.Response.Redirect($"/login?ReturnUrl={ httpContext.Request.Path}");
+            httpContext.Response.Redirect($"/entrar?ReturnUrl={ httpContext.Request.Path}");
             return;
         }
 

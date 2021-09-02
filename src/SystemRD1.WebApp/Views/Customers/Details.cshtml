@@ -1,36 +1,56 @@
-﻿@{
+﻿@model IEnumerable<CustomerViewModel>
+
+@{
     ViewData["Title"] = "Detalhes do Cliente";
 }
 
+<div class="h2">
+    
+</div>
 <div class="row">
-    <div class="col-4">
-        <div class="container container-fluid">
-            <div class="card">
-                <div class="card-header">
-                    Clientes
-                </div>
-                <div class="card-body">
-                    Detalhes do cliente
-                </div>
-                <div class="card-footer">
-                    Status: Ativo
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-4">
-        <div class="container container-fluid">
-            <div class="card">
-                <div class="card-header">
-                    Clientes 2
-                </div>
-                <div class="card-body">
-                    Detalhes do cliente 2
-                </div>
-                <div class="card-footer">
-                    Status: Ativo 2
-                </div>
-            </div>
-        </div>
+    <div class="col-6 col-sm">
+        <table class="table table-striped">
+            <thead>
+                <tr class="text-dark">
+                    <th>
+                        Nome
+                    </th>
+                    <th>
+                        Sobrenome
+                    </th>
+                    <th>
+                        Documento
+                    </th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var c in Model.ToList())
+                {
+                    <tr>
+                        <td>
+                            @c.FirstName
+                        </td>
+                        <td>
+                            @c.LastName
+                        </td>
+                        <td>
+                            @c.Document
+                        </td>
+                        <td>
+                            <button class="btn btn-info btn-sm">Editar</button>
+                        </td>
+                        <td>
+                            <button class="btn btn-info btn-sm">Excluir</button>
+                        </td>
+                        <td>
+                            <button class="btn btn-info btn-sm">Pesquisar</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
     </div>
 </div>

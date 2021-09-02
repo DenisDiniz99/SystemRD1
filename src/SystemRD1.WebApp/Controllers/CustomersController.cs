@@ -22,7 +22,7 @@ namespace SystemRD1.WebApp.Controllers
             {
                 return NotFound();
             }
-            return View();
+            return View(result);
         }
     }
 }

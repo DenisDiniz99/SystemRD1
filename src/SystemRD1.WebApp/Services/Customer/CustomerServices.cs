@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
-using SystemRD1.WebApp.Extensions;
 using SystemRD1.WebApp.Models.Customer;
 
 namespace SystemRD1.WebApp.Services.Customer

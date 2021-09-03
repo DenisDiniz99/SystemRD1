@@ -4,37 +4,34 @@
     ViewData["Title"] = "Login";
 }
 
-<div class="container">
-    <div class="row">
-        <div class="col-4">
+<div class="d-flex justify-content-center mt-3">
+    <div class="card mx-auto" style="width: 400px">
+        <div class="card-body">
+            <h5 class="card-title text-center text-secondary">
+                Seja bem-vindo
+            </h5>
+            <hr />
             <form method="post">
-                <h4 class="h4 text-dark">Entre</h4>
-                <hr />
-                <div class="alert alert-danger" role="alert">
-                    <h3>Ops! Algo errado! :(</h3>
-                    <div asp-validation-summary="All" class="text-danger"></div>
-                </div>
+                <vc:summary></vc:summary>
                 <div class="form-group">
                     <input asp-for="Email" class="form-control form-text text-dark" placeholder="E-mail de acesso" id="email" />
                     <label for="email" class="col-form-label"></label>
-                    <div class="alert alert-danger" role="alert">
-                        <span asp-validation-for="Email" class="text-danger"></span>
-                    </div>
+                    <span asp-validation-for="Email" class="text-danger"></span>
                 </div>
                 <div class="form-group">
                     <input asp-for="Password" class="form-control form-text text-dark" placeholder="Senha de acesso" id="password" />
                     <label for="password" class="col-form-label"></label>
-                    <div class="alert alert-danger" role="alert">
-                        <span asp-validation-for="Password" class="text-danger"></span>
-                    </div>
+                    <span asp-validation-for="Password" class="text-danger"></span>
                 </div>
-                <button type="submit" class="btn btn-primary">Entrar</button>
-                <br />
-                Não possui uma conta ? <a asp-controller="User" asp-action="Register">Registre-se aqui !</a>
+                <button type="submit" class="btn btn-primary mr-1" style="width: 173px">Entrar</button>
+                <button type="button" class="btn btn-success" style="width: 173px" asp-controller="User" asp-action="Register">Nova Conta</button>
             </form>
         </div>
     </div>
 </div>
+
+
+
 
 @section Scripts{
     <partial name="_ValidationScriptsPartial" />

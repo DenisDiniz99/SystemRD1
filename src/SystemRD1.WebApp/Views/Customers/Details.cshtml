@@ -1,28 +1,33 @@
 ﻿@model IEnumerable<CustomerViewModel>
 
 @{
-    ViewData["Title"] = "Detalhes do Cliente";
+    ViewData["Title"] = "Clientes";
 }
 
-<div class="h2">
-    
-</div>
-<div class="row">
-    <div class="col-6 col-sm">
-        <table class="table table-striped">
+<div class="container">
+    <div class="d-flex justify-content-center">
+        <h2 class="text-secondary">
+            Clientes
+        </h2>
+    </div>
+
+    @if (Model.ToList().Count == 0)
+    {
+        <div class="alert alert-danger">
+            Ops! Não foram encontrados clientes cadastrados! :(
+        </div>
+    }
+
+
+    <button type="button" class="btn btn-primary btn-sm mb-2" title="Novo Cliente">Novo</button>
+
+    <div class="d-flex justify-content-center">
+        <table class="table table-hover" style="width: 800px">
             <thead>
-                <tr class="text-dark">
-                    <th>
-                        Nome
-                    </th>
-                    <th>
-                        Sobrenome
-                    </th>
-                    <th>
-                        Documento
-                    </th>
-                    <th></th>
-                    <th></th>
+                <tr>
+                    <th>Nome</th>
+                    <th>Sobrenome</th>
+                    <th>Documento</th>
                     <th></th>
                 </tr>
             </thead>
@@ -30,23 +35,13 @@
                 @foreach (var c in Model.ToList())
                 {
                     <tr>
+                        <td>@c.FirstName</td>
+                        <td>@c.LastName</td>
+                        <td>@c.Document</td>
                         <td>
-                            @c.FirstName
-                        </td>
-                        <td>
-                            @c.LastName
-                        </td>
-                        <td>
-                            @c.Document
-                        </td>
-                        <td>
-                            <button class="btn btn-info btn-sm">Editar</button>
-                        </td>
-                        <td>
-                            <button class="btn btn-info btn-sm">Excluir</button>
-                        </td>
-                        <td>
-                            <button class="btn btn-info btn-sm">Pesquisar</button>
+                            <button class="btn btn-primary btn-sm mr-2" title="Detalhes do Cliente">Detalhes</button>
+                            <button class="btn btn-primary btn-sm mr-2" title="Editar Cliente">Editar</button>
+                            <button class="btn btn-primary btn-sm" title="Excluir Cliente">Excluir</button>
                         </td>
                     </tr>
                 }

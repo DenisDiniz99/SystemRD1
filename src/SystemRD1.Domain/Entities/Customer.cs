@@ -6,7 +6,6 @@ namespace SystemRD1.Domain.Entities
 {
     public class Customer : Entity
     {
-        /*Ctor. Default : EF Core*/
         public Customer() { }
 
         public string FirstName { get; set; }

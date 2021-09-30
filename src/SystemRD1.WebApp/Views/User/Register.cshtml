@@ -4,39 +4,31 @@
     ViewData["Title"] = "Registro";
 }
 
-<div class="container justify-content-center">
-    <div class="row">
-        <div class="col-md-4">
+<div class="d-flex justify-content-center mt-3">
+    <div class="card mx-auto" style="width: 400px">
+        <div class="card-body">
             <form method="post">
-                <h4 class="h4 text-dark">Sua nova conta</h4>
+                <h5 class="card-title text-center text-secondary">
+                    Sua nova conta
+                </h5>
                 <hr />
-                <div class="alert alert-danger">
-                    <h3>Ops! Algo errado! :(</h3>
-                    <div asp-validation-summary="All" class="text-danger"></div>
-                </div>
+                <vc:summary></vc:summary>
                 <div class="form-group">
                     <label asp-for="Email" class="col-form-label"></label>
                     <input asp-for="Email" class="form-control form-text" />
-                    <div class="alert alert-danger" role="alert">
-                        <span asp-validation-for="Email" class="text-danger"></span>
-                    </div>
+                    <span asp-validation-for="Email" class="text-danger"></span>
                 </div>
                 <div class="form-group">
                     <label asp-for="Password" class="col-form-label"></label>
                     <input asp-for="Password" class="form-control form-text" />
-                    <div class="alert alert-danger">
-                        <span asp-validation-for="Password" class="text-danger"></span>
-                    </div>
+                    <span asp-validation-for="Password" class="text-danger"></span>
                 </div>
                 <div class="form-group">
                     <label asp-for="ConfirmPassword" class="col-form-label"></label>
                     <input asp-for="ConfirmPassword" class="form-control form-text" />
-                    <div class="alert alert-danger">
-                        <span asp-validation-for="ConfirmPassword" class="text-dark"></span>
-                    </div>
+                    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
                 </div>
-                <button type="submit" class="btn btn-primary">Registrar</button>
-                <br />
+                <button type="submit" class="btn btn-primary">Registrar</button> |
                 Já possui uma conta ? <a asp-action="Login" asp-controller="User">Entre aqui!</a>
             </form>
         </div>

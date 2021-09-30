@@ -32,6 +32,8 @@ namespace SystemRD1.WebApp.Controllers
 
             var response = await _authenticationServices.RegisterService(model);
 
+            if (ResponseModelStateErrors(response.ResponseResult)) return View(model);
+
             await _authenticationServices.ConfirmLogin(response);
 
             if (string.IsNullOrEmpty(returnUrl)) return RedirectToAction("Index", "Home");

@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
 using SystemRD1.Domain.Entities;
 
 namespace SystemRD1.Data.Mappings

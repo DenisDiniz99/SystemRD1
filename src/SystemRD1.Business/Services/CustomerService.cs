@@ -22,6 +22,7 @@ namespace SystemRD1.Business.Services
             if (!PerformValidation(new CustomerValidation(), customer)) return;        
 
             await _customerRepository.AddAsync(customer);
+
         }
 
         public async Task UpdateAsync(Customer customer)
